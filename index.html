@@ -180,7 +180,13 @@
       margin-bottom: calc(16px + env(safe-area-inset-bottom));
       font-size:9px; padding:8px 12px; max-width:86vw; text-align:center;
     }
-    .poi-label{ font-size:9px; letter-spacing:0.12em; }
+    .poi-label{
+      font-size:9.5px; letter-spacing:0.1em;
+      background: rgba(12,18,32,0.6); border:1px solid rgba(243,237,226,0.22);
+      border-radius:999px; padding:7px 12px;
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      max-width:62vw; overflow:hidden; text-overflow:ellipsis;
+    }
     #return-btn{ top: calc(10px + env(safe-area-inset-top)); font-size:10px; padding:8px 14px; }
     .floating-card, .floating-card.wide{
       width: min(86vw, 320px);
@@ -1746,7 +1752,7 @@ var overviewPos = new THREE.Vector3();
 var overviewTarget = new THREE.Vector3(0, 2, 0);
 var camTarget = new THREE.Vector3(0, 2, 0);
 /* portrait screens have a narrower horizontal FOV — pull back so the island fits */
-var overviewDist = 42 * Math.max(1, Math.min(1.7, 1 / (innerWidth / innerHeight)));
+var overviewDist = 42 * Math.max(1, Math.min(1.35, 1 / (innerWidth / innerHeight)));
 var camDistance = overviewDist, camTheta = Math.PI / 4, camPhi = 1.08;
 var autoRotate = true;
 var dragging = false, lastPX = 0, lastPY = 0;
@@ -1958,9 +1964,13 @@ function projectToScreen(worldPos) {
   _vec.copy(worldPos);
   var projected = _vec.project(camera);
   var behind = projected.z > 1;
-  var x = (projected.x * 0.5 + 0.5) * innerWidth;
-  var y = (-projected.y * 0.5 + 0.5) * innerHeight;
-  return { x: x, y: y, behind: behind };
+  /* measure the canvas itself — on mobile the URL bar collapsing makes
+     innerWidth/innerHeight disagree with the rendered canvas size */
+  var w = renderer.domElement.clientWidth || innerWidth;
+  var h = renderer.domElement.clientHeight || innerHeight;
+  var x = (projected.x * 0.5 + 0.5) * w;
+  var y = (-projected.y * 0.5 + 0.5) * h;
+  return { x: x, y: y, behind: behind, w: w, h: h };
 }
 
 function updatePoiLabels() {
@@ -1970,8 +1980,17 @@ function updatePoiLabels() {
     var p = projectToScreen(wp);
     var el = poiLabelEls[i];
     var hideForOpen = currentOpen && currentOpen === POIS[i];
-    if (p.behind || p.x < -50 || p.x > innerWidth + 50 || hideForOpen) el.style.opacity = '0';
-    else { el.style.opacity = '1'; el.style.left = p.x + 'px'; el.style.top = p.y + 'px'; }
+    if (p.behind || p.x < -50 || p.x > p.w + 50 || hideForOpen) { el.style.opacity = '0'; el.style.pointerEvents = 'none'; }
+    else {
+      var lx = p.x, ly = p.y;
+      if (IS_MOBILE) { /* keep chips fully on-screen and reachable */
+        var half = (el.offsetWidth || 120) / 2 + 8;
+        lx = Math.max(half, Math.min(p.w - half, lx));
+        ly = Math.max(110, Math.min(p.h - 90, ly));
+      }
+      el.style.opacity = '1'; el.style.pointerEvents = 'auto';
+      el.style.left = lx + 'px'; el.style.top = ly + 'px';
+    }
   }
 }
 
