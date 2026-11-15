@@ -408,7 +408,7 @@
 
 <div id="hud">
   <div class="top">
-    <div class="title">Aditya Pandey<span class="role">AI/ML Engineer · local-first AI &amp; Linux tools</span><small>Drag to look · right-drag or WASD to move · scroll to zoom</small>
+    <div class="title">Aditya Pandey<span class="role">AI/ML Engineer · local-first AI &amp; Linux tools</span><small>Drag to look · WASD or right-drag to move · double-click to travel</small>
       <div id="season-indicator"><span class="kanji" id="season-kanji">春</span><span id="season-label">Spring</span></div>
     </div>
     <div id="watch">
@@ -908,6 +908,8 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, QUALITY.pixelRatioCap));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.autoUpdate = false;
+renderer.shadowMap.needsUpdate = true;
 if (THREE.ACESFilmicToneMapping) renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.1;
 if ('outputEncoding' in renderer) renderer.outputEncoding = THREE.sRGBEncoding;
@@ -2015,11 +2017,100 @@ var BIO_LINES = [
 var npcGroup = new THREE.Group();
 islandGroup.add(npcGroup);
 var villagers = [];
+/* Every resident has a job that explains part of the portfolio: what each island is for, a project,
+   a skill or a way to get in touch. Facts come from the repos and resume; lines are what they say
+   when idle or when they meet someone. */
+var GH_ = 'https://github.com/ItzAditya43/';
+var NPC_PROFILES = [
+  /* ---- hub plaza ---- */
+  [
+    { name: 'Haru', role: 'Town Crier', bio: 'Announces what is new in the village. Will tell anyone who stands still long enough that four islands hold four sides of Aditya: who he is, what he builds, how he builds it, and how to reach him.',
+      lines: ['Hear ye! Four islands, four shrines. Cross the bridges!', 'New here? The shrine on each island opens a card about Aditya.', 'The "All work" button up top lists every project at once.', 'Spring, summer, autumn, winter. The seasons turn every ninety seconds.'] },
+    { name: 'Aiko', role: 'Ferry Guide', bio: 'Walks visitors across the bridges. Knows which island suits what you want to see: the lake for the story, the mountain for the projects, the farm for the tools, the bamboo grove for saying hello.',
+      lines: ['Projects? The mountain island with the waterfall.', 'Want the person behind it? The koi lake.', 'Tools and skills? Follow the bridge to the farm.', 'Mind the bridge rails, they are freshly painted.'] },
+    { name: 'Kenji', role: 'Lantern Keeper', bio: 'Lights every lantern at dusk, and says each one is a project Aditya got running: dark until someone wrote the last line, then it glows. Keeps count on a string of knots.',
+      lines: ['Another lantern lit. Another bug closed.', 'The sky lanterns rise at night. Look up after dark.', 'Real clock, real sun. The village keeps your local time.', 'A project is not done until it runs on someone else\'s machine.'] },
+    { name: 'Yui', role: 'Courier', bio: 'Carries messages between the islands, and has delivered more than a few emails to Aditya. Ask her how to reach him and she will point you at the bamboo grove.',
+      lines: ['A letter for the bamboo grove, as always.', 'Email, GitHub, LinkedIn: all at the Contact shrine.', 'I run between islands so you do not have to.', 'Quicker by bridge than by cloud.'],
+      links: [['Email', 'mailto:aditya20pnd@gmail.com']] }
+  ],
+  /* ---- About: the koi lake ---- */
+  [
+    { name: 'Sora', role: 'Koi Keeper', bio: 'Feeds the koi at dawn. Says Aditya got into programming almost by accident and stayed because of the problems: "I could use an existing solution, but where is the learning experience in that?"',
+      lines: ['The orange one is the greedy one.', 'Eleven koi, and each knows its own spot.', 'Aditya says he is an accidental programmer. The koi approve.', 'Quiet water, clear thoughts.'] },
+    { name: 'Ren', role: 'Fisher', bio: 'Never catches anything and does not mind. Likes to say Aditya builds the same way: sit with a problem long enough and it bites.',
+      lines: ['No luck today. Wonderful day regardless.', 'Patience is most of engineering.', 'The jetty is the best seat on the island.', 'Some builds take days. Some fish take longer.'] },
+    { name: 'Mika', role: 'Storyteller', bio: 'Tells how Aditya is studying Computer Science & Design at RGIPT (2023 to 2027), is based in Mumbai, and qualified GATE 2026 in his pre-final year.',
+      lines: ['B.Tech in Computer Science & Design, RGIPT, 2023 to 2027.', 'Qualified GATE 2026 while still in his pre-final year.', 'He solved a hundred-odd problems on LeetCode and CodeChef for fun.', 'AWS Cloud Practitioner Essentials, 2026. Another stone on the wall.'],
+      links: [['LeetCode', 'https://leetcode.com/u/Adi0026/'], ['CodeChef', 'https://www.codechef.com/users/adityapnd10']] },
+    { name: 'Daichi', role: 'Stonemason', bio: 'Built the stone ring around the lake. Says Aditya picks problems like stones: heavy enough to matter, and fits only when set properly.',
+      lines: ['Every stone here was set by hand.', 'A good wall needs no mortar, only patience.', 'Build it once, build it right, then build the next.', 'Notice how none of the stones match? Neither do the projects.'] },
+    { name: 'Nao', role: 'Tea Seller', bio: 'Serves tea by the lake. Hears all the gossip, and says the most-told story is the 17.8M-parameter keyboard model that fits on a phone.',
+      lines: ['Tea? Fresh from the pot.', 'Ask about the keyboard with no app icon. It is a good story.', 'Aditya trained an LLM on a 4GB laptop GPU. Ambitious.', 'Everyone leaves calmer than they arrived.'] },
+    { name: 'Toshi', role: 'Elder', bio: 'Has watched the village grow from one island to five. Remembers when it was a single floating plain with four shrines, before the bridges.',
+      lines: ['This used to be one island. Four shrines, no bridges.', 'Aditya rebuilt it bigger. He always does.', 'Build. Break. Learn. Repeat. Words from the first shrine.', 'The koi were here before the village.'] }
+  ],
+  /* ---- Projects: the mountain and waterfall ---- */
+  [
+    { name: 'Ryo', role: 'Blacksmith', bio: 'Forges the big things. Proudest of Zenith, the self-hosted AI workspace on local Ollama models: chat, a coding agent that asks before it acts, research, memory, image generation and voice. Nothing leaves the machine.',
+      lines: ['Zenith: the whole AI workspace, on your own machine.', 'The agent asks before it acts. Good manners for a tool.', 'No cloud, no accounts, nothing leaves your machine.', 'Hot iron, cold logic.'],
+      links: [['Zenith', GH_ + 'Zenith'], ['Live', 'https://itzaditya43.github.io/Zenith/']] },
+    { name: 'Emi', role: 'Apprentice Scribe', bio: 'Copies out the story of Zenith-AI: a language model written from scratch. Tokenizer, transformer, training loop, inference, all trained on a single 4GB GPU. No pretrained weights.',
+      lines: ['Every layer written by hand. Attention, RoPE, the KV cache.', 'Trained on a 4GB laptop GPU. Imagine.', 'No pretrained weights. It learned here.', 'My ink is nearly gone, but the loss is still falling.'],
+      links: [['Zenith-AI', GH_ + 'Zenith-AI']] },
+    { name: 'Hana', role: 'Observatory Keeper', bio: 'Watches the machine instead of the sky. Keeper of Trace: a Linux observatory that shows what the computer is doing, remembers it, and explains why it is slow or hot. Built in Rust with Tauri and React.',
+      lines: ['Trace tells you why the machine is slow.', 'Processes, cgroups, systemd, Docker, GPU: all in one view.', 'Rust and Tauri. Fast and native.', 'Measure first, then guess less.'],
+      links: [['Trace', GH_ + 'Trace']] },
+    { name: 'Ken', role: 'Keysmith', bio: 'Makes keys of another sort. MyKey is a private Android keyboard that never sends what you type anywhere, with glide typing, five languages, and a 17.8M-parameter model running on the phone. It has no app icon.',
+      lines: ['MyKey never sends a single keystroke anywhere.', 'The model lives on the phone. 17.8 million parameters.', 'No app icon, on purpose. Open it from the keyboard.', 'Type in peace.'],
+      links: [['MyKey', GH_ + 'MyKey']] },
+    { name: 'Rin', role: 'Water Surveyor', bio: 'Studies where water runs out. DayZero computes the month a real neighbourhood goes dry from building footprints and 34 years of climate history, then finds the cheapest plan to buy those months back. Built for NextStep Hacks 2026.',
+      lines: ['DayZero: when does this place run out of water?', 'Thirty-four years of climate history for one answer.', 'Then it finds the cheapest way to buy months back.', 'Cape Town counted down to its Day Zero in 2018.'],
+      links: [['DayZero', 'https://dayzero-cuy1.onrender.com'], ['GitHub', GH_ + 'DayZero']] },
+    { name: 'Goro', role: 'Projectionist', bio: 'Runs the village cinema. SameSecond keeps everyone on the same second of a video with no re-streaming, so Netflix and Crunchyroll work too, on Cloudflare Workers with Durable Objects. Also minds Higanbana, the anime streaming site.',
+      lines: ['SameSecond: everyone on the same second.', 'Your own player, your own account, one shared moment.', 'It runs free on Cloudflare Workers.', 'Higanbana streams the anime. SameSecond syncs the friends.'],
+      links: [['SameSecond', 'https://samesecond.itzaditya43.workers.dev'], ['Higanbana', 'https://higanbana.xyz']] }
+  ],
+  /* ---- Stack: the farm ---- */
+  [
+    { name: 'Tamako', role: 'Wheat Farmer', bio: 'Says the wheat field is Python: the staple, planted first and in every row. FastAPI, Flask and Django are what you bake from it. PyTorch is the rice.',
+      lines: ['Python is the wheat. Plant it everywhere.', 'FastAPI for the bread, Django for the feast.', 'Good soil, good yield. Same with a clean codebase.', 'Plant early, test often.'] },
+    { name: 'Takeshi', role: 'Rice Grower', bio: 'Keeps the flooded paddy: deep learning. Transformers, scikit-learn and OpenCV all grow best with patient water. Evaluates every harvest before trusting it.',
+      lines: ['The paddy is the ML field. PyTorch, transformers, scikit-learn.', 'Rice teaches patience. So does training.', 'Always evaluate the harvest before trusting it.', 'Water, wait, measure.'] },
+    { name: 'Sakura', role: 'Cabbage Gardener', bio: 'Tends the LLM stack: Ollama, LangChain, RAG, MCP, FAISS and ChromaDB. Everything is local-first, so the vegetables never leave the garden.',
+      lines: ['Ollama models, grown right here, not shipped in.', 'RAG is just good soil for the answer.', 'MCP connects the tools like a garden gate.', 'Local-first: nothing leaves the garden.'] },
+    { name: 'Shin', role: 'Fence Builder', bio: 'Builds the backends: FastAPI, Node and Express, WebSockets, PostgreSQL, MongoDB. Everything behind the fence is solid so the front can stay pretty.',
+      lines: ['A fence is just an API with a good contract.', 'Postgres for what must not be lost.', 'WebSockets: a gate that stays open both ways.', 'Strong posts, straight rails.'] },
+    { name: 'Midori', role: 'Pumpkin Grower', bio: 'Responsible for the front of house: TypeScript, React, Next.js, Three.js. Takes credit for how nice the village looks from the road.',
+      lines: ['This whole village is Three.js. One HTML file.', 'TypeScript catches the weeds before harvest.', 'Pretty is a feature, not a luxury.', 'Pumpkins are a frontend. They are mostly presentation.'] },
+    { name: 'Gen', role: 'Mill Keeper', bio: 'Grinds it all together: Docker, GitHub Actions, Git, Linux (Arch with Hyprland, naturally), Cloudflare. Insists that shipping is part of building.',
+      lines: ['Docker: every crop in its own sack.', 'Arch, btw. With Hyprland.', 'CI is the miller. Nothing leaves unmilled.', 'It does not count until it ships.'] }
+  ],
+  /* ---- Contact: the bamboo grove ---- */
+  [
+    { name: 'Sumi', role: 'Letter Writer', bio: 'Writes letters for those who cannot find the words. The fastest way to reach Aditya is email; GitHub and LinkedIn work too.',
+      lines: ['Email is quickest: aditya20pnd@gmail.com.', 'Say what you are building. He likes a good problem.', 'Collaborations welcome. Tubcal was one.', 'Do not be shy. Write.'],
+      links: [['Email', 'mailto:aditya20pnd@gmail.com'], ['LinkedIn', 'https://www.linkedin.com/in/adityapandey10/']] },
+    { name: 'Akira', role: 'Wandering Monk', bio: 'Walks the bamboo paths between shrines. Looking for open source projects to contribute to, as Aditya is. Says that is the proper way to meet strangers: through work.',
+      lines: ['Looking for open source to join. So is Aditya.', 'Good code is a quiet kind of kindness.', 'GitHub is the village square.', 'Every pull request is a small bow.'],
+      links: [['GitHub', 'https://github.com/ItzAditya43']] },
+    { name: 'Kaede', role: 'Competitor', bio: 'Trains on the grove\'s open ground. Keeps up with Aditya\'s Kaggle runs, including an AI agent for a Pokémon card game, and the rated contests on CodeChef and LeetCode.',
+      lines: ['Kaggle: a Pokémon TCG battle agent in progress.', 'Rated contests keep the mind sharp.', 'A hundred-plus problems solved. Still going.', 'Compete with the old you.'],
+      links: [['Kaggle', 'https://www.kaggle.com/adipandey777'], ['LeetCode', 'https://leetcode.com/u/Adi0026/']] },
+    { name: 'Natsu', role: 'Tea Brewer', bio: 'Always has a pot ready. Says conversations about local-first AI, self-hosted stacks and Hyprland configs are the best use of one.',
+      lines: ['Tea, and a chat about self-hosted stacks?', 'Hyprland configs welcome. Bring screenshots.', 'Sit. Stay a while.', 'Good conversation beats good tea. Barely.'],
+      links: [['X / Twitter', 'https://x.com/adityapnd10']] },
+    { name: 'Rei', role: 'Gate Warden', bio: 'Guards the torii at the grove\'s entrance. Everyone is welcome, though he asks visitors to take a moment before going in.',
+      lines: ['Welcome. Take a breath before you enter.', 'The shrine is straight ahead.', 'The gate is open to anyone with a good question.', 'Mind the lanterns at night.'] },
+    { name: 'Kazu', role: 'Bamboo Cutter', bio: 'Thins the grove each year, because bamboo that is not cut chokes itself. Says the same of side projects, and of Aditya\'s habit of finishing them.',
+      lines: ['Bamboo grows a metre a day when it is happy.', 'Cut what you do not need. Keep what you do.', 'Finished beats perfect.', 'Strong because hollow. Flexible because jointed.'] }
+  ]
+];
 var ISLE_NAMES = ['the plaza'].concat(SHRINE_DATA.map(function (d) { return d.name + ' isle'; }));
 ISLANDS.forEach(function (isl, ii) {
-  var count = isl.hub ? (IS_MOBILE ? 2 : 4) : (IS_MOBILE ? 4 : 6);
+  var count = isl.hub ? 4 : (IS_MOBILE ? 4 : 6); /* every resident has a job, so keep the whole cast on desktop */
   for (var k = 0; k < count; k++) {
-    var vi = villagers.length;
+    var vi = villagers.length, prof = NPC_PROFILES[ii][k % NPC_PROFILES[ii].length];
     var mesh = buildVillager(vi * 5.13 + 2);
     var bubble = makeBubbleSprite();
     mesh.add(bubble.sprite);
@@ -2034,9 +2125,8 @@ ISLANDS.forEach(function (isl, ii) {
       walkPhase: Math.random() * 10,
       heading: Math.random() * Math.PI * 2,
       bubble: bubble, bubbleTimer: 0, currentLine: null, replyAt: 0, replyLine: null,
-      name: VILLAGER_NAMES[vi % VILLAGER_NAMES.length],
-      role: VILLAGER_ROLES[vi % VILLAGER_ROLES.length] + ' · lives on ' + ISLE_NAMES[ii],
-      bio: BIO_LINES[vi % BIO_LINES.length]
+      name: prof.name,
+      role: prof.role + ' · ' + ISLE_NAMES[ii], bio: prof.bio, lines: prof.lines, links: prof.links || null
     });
     npcGroup.add(mesh);
   }
@@ -2135,8 +2225,9 @@ function updateVillagers(dt) {
         if (vb.state !== 'idle' || vb.bubbleTimer > 0) continue;
         var ddx = va.x - vb.x, ddz = va.z - vb.z;
         if (Math.sqrt(ddx * ddx + ddz * ddz) < 3.4 && Math.random() < 0.45) {
-          var line1 = GREETING_PAIR[Math.floor(Math.random() * GREETING_PAIR.length)];
-          var line2 = GREETING_PAIR[Math.floor(Math.random() * GREETING_PAIR.length)];
+          var la = va.lines || IDLE_SOLO, lb = vb.lines || IDLE_SOLO;
+          var line1 = la[Math.floor(Math.random() * la.length)];
+          var line2 = lb[Math.floor(Math.random() * lb.length)];
           /* turn to face each other; one speaks, the other answers a beat later */
           va.heading = Math.atan2(vb.x - va.x, vb.z - va.z);
           vb.heading = Math.atan2(va.x - vb.x, va.z - vb.z);
@@ -2158,7 +2249,8 @@ function showBubble(v, text, dur) {
   v.currentLine = text;
 }
 function triggerSoloBubble(v) {
-  showBubble(v, IDLE_SOLO[Math.floor(Math.random() * IDLE_SOLO.length)], 3);
+  var pool = v.lines || IDLE_SOLO;
+  showBubble(v, pool[Math.floor(Math.random() * pool.length)], 3.6);
 }
 
 /* ---------------------------------------------------------------------
@@ -3048,7 +3140,7 @@ var bambooLeafMat = new THREE.MeshStandardMaterial({ map: leafCardTex, alphaTest
     mesh: mesh, x: sx + (-adz / al) * 0.2, z: sz + (adx / al) * 0.2, y: 0, node: node, path: [], stopR: 1, home: ii, fixed: true,
     state: 'idle', idleTimer: 4, speed: 0, walkPhase: 0, heading: Math.atan2(sp.x - adx / al * 5 - sx, sp.z - adz / al * 5 - sz),
     bubble: bubble, bubbleTimer: 0, currentLine: null, replyAt: 0, replyLine: null,
-    name: 'The Sage', role: 'Sage · keeper of the bamboo grove',
+    name: 'The Sage', role: 'Sage · keeper of the bamboo grove', lines: null,
     bio: 'Has kept watch from this rock beside the shrine longer than the bamboo has stood. Answers most questions with a better question.'
   });
 })();
@@ -3056,6 +3148,8 @@ var SAGE_LINES = [
   'Bamboo bends, and so it stands.', 'Ship small. Ship often. Then listen.', 'A quiet mind debugs fastest.',
   'The road between islands is also the village.', 'What you build teaches you what to build next.', 'Sit. The wind has something to say.'
 ];
+
+villagers.forEach(function (v) { if (v.name === 'The Sage') v.lines = SAGE_LINES; });
 
 function updateThemes(t, dt) {
   waterBumpTex.offset.set(t * 0.012, t * 0.02);
@@ -3354,15 +3448,16 @@ function openVillager(v) {
   window.PF.setActive(-1);
   var vy = v.y;
   var dir = new THREE.Vector3(Math.sin(v.heading), 0, Math.cos(v.heading));
-  var camPos = new THREE.Vector3(v.x - dir.x * 3.4, vy + 2.6, v.z - dir.z * 3.4);
-  var lookAt = new THREE.Vector3(v.x, vy + 1.3, v.z);
+  var camPos = new THREE.Vector3(v.x - dir.x * 4.2, vy + 2.4, v.z - dir.z * 4.2);
+  var lookAt = new THREE.Vector3(v.x, vy + 3.0, v.z); /* aim above the villager so the card sits over empty sky and they stand below it */
   flyCameraTo(camPos, lookAt, 1.1);
   hint.classList.add('hidden');
   var speakingNow = v.bubbleTimer > 0 && v.currentLine;
   var quoteHtml = speakingNow
-    ? '<p style="color:var(--gold); font-style:italic;">&ldquo;' + v.currentLine + '&rdquo;</p>'
+    ? '<p style="color:#f5f5f7; font-style:italic;">&ldquo;' + v.currentLine + '&rdquo;</p>'
     : '';
-  showCard('<div class="eyebrow">' + v.role + '</div><h3>' + v.name + '</h3>' + quoteHtml + '<p>' + v.bio + '</p>');
+  var linkHtml = (v.links || []).map(function (l) { return '<a class="proj-link" href="' + l[1] + '" target="_blank" rel="noopener">' + l[0] + ' &#8599;</a>'; }).join('');
+  showCard('<div class="eyebrow">' + v.role + '</div><h3>' + v.name + '</h3>' + quoteHtml + '<p>' + v.bio + '</p>' + (linkHtml ? '<p>' + linkHtml + '</p>' : ''));
   if (speakingNow) v.bubbleTimer = Math.max(v.bubbleTimer, 4.5);
   shrineNavPrev.classList.remove('visible');
   shrineNavNext.classList.remove('visible');
@@ -3432,10 +3527,51 @@ window.addEventListener('pointermove', function (e) {
   lastPX = e.clientX; lastPY = e.clientY;
   if (!flight) sphericalToPos(camTarget, camDistance, camTheta, camPhi, camera.position);
 });
+/* where the pointer's ray meets the horizontal plane through the orbit centre (null if it points at the sky) */
+var _camRay = new THREE.Raycaster(), _camNdc = new THREE.Vector2(), _camHit = new THREE.Vector3();
+function groundUnderPointer(cx, cy, planeY) {
+  _camNdc.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
+  _camRay.setFromCamera(_camNdc, camera);
+  var o = _camRay.ray.origin, d = _camRay.ray.direction;
+  if (d.y > -0.02) return null;
+  var t = (planeY - o.y) / d.y;
+  if (t < 0 || t > 900) return null;
+  return _camHit.set(o.x + d.x * t, planeY, o.z + d.z * t);
+}
+function limitTarget() {
+  var len = Math.hypot(camTarget.x, camTarget.z);
+  if (len > PAN_LIMIT) { camTarget.x *= PAN_LIMIT / len; camTarget.z *= PAN_LIMIT / len; }
+}
+/* zoom toward whatever is under the cursor, so you travel to where you point instead of diving into the centre */
 renderer.domElement.addEventListener('wheel', function (e) {
   e.preventDefault();
-  camDistance = THREE.MathUtils.clamp(camDistance + e.deltaY * 0.03 * Math.max(0.25, camDistance / 60), 4, 175);
+  if (flight) return;
+  var oldD = camDistance;
+  var newD = THREE.MathUtils.clamp(oldD + e.deltaY * 0.03 * Math.max(0.25, oldD / 60), 4, 175);
+  var hit = groundUnderPointer(e.clientX, e.clientY, camTarget.y);
+  if (hit && newD !== oldD) {
+    var f = 1 - newD / oldD;
+    camTarget.x += (hit.x - camTarget.x) * f;
+    camTarget.z += (hit.z - camTarget.z) * f;
+    limitTarget();
+    autoRotate = false;
+    if (!currentOpen) returnBtn.classList.add('visible');
+  }
+  camDistance = newD;
 }, { passive: false });
+/* double-click open ground to fly there */
+renderer.domElement.addEventListener('dblclick', function (e) {
+  if (currentOpen || flight) return;
+  var hit = groundUnderPointer(e.clientX, e.clientY, camTarget.y);
+  if (!hit) return;
+  var tx = hit.x, tz = hit.z, r = Math.hypot(tx, tz);
+  if (r > PAN_LIMIT) { tx *= PAN_LIMIT / r; tz *= PAN_LIMIT / r; }
+  var ty = (landK(tx, tz) > 0 ? islandHeight(tx, tz) : 0) + 2;
+  var rel = camera.position.clone().sub(camTarget).normalize().multiplyScalar(Math.min(camDistance, 36));
+  var to = new THREE.Vector3(tx, ty, tz);
+  flyCameraTo(to.clone().add(rel), to, 1.1);
+  returnBtn.classList.add('visible');
+});
 
 var lastTouchDist = null, lastMidX = 0, lastMidY = 0;
 renderer.domElement.addEventListener('touchstart', function (e) {
@@ -3570,9 +3706,10 @@ function projectToScreen(worldPos) {
   return { x: x, y: y, behind: behind, w: w, h: h };
 }
 
+var _poiVec = new THREE.Vector3();
 function updatePoiLabels() {
   for (var i = 0; i < POIS.length; i++) {
-    var wp = POIS[i].worldPos.clone();
+    var wp = _poiVec.copy(POIS[i].worldPos);
     islandGroup.localToWorld(wp);
     var p = projectToScreen(wp);
     var el = poiLabelEls[i];
@@ -3593,6 +3730,7 @@ function updatePoiLabels() {
 
 /* the seasons turn on their own: one full year every six minutes */
 var SEASON_ORDER = ['spring', 'summer', 'autumn', 'winter'], SEASON_PERIOD = 90, seasonClock = 0;
+var dayNightAccum = 1, shadowFrame = 0;
 var dtClamp = 0.05;
 function animate() {
   requestAnimationFrame(animate);
@@ -3609,7 +3747,8 @@ function animate() {
   }
   applySeasonTransition(dt);
   updateSeasonParticles(t);
-  updateDayNight();
+  dayNightAccum += rawDt;
+  if (dayNightAccum >= 0.1) { dayNightAccum = 0; updateDayNight(); }
   updateVillagers(dt);
   updateAtmosphere(t, dt);
   updateThemes(t, dt);
@@ -3646,6 +3785,7 @@ function animate() {
     updateCameraFromSpherical();
   }
 
+  renderer.shadowMap.needsUpdate = (++shadowFrame & 1) === 0 || shadowFrame < 3;
   updatePoiLabels();
   updateEnvironment(t);
   if (composer) composer.render();
@@ -3655,6 +3795,7 @@ function animate() {
 /* ---------------------------------------------------------------------
    17. Boot
 --------------------------------------------------------------------- */
+scene.traverse(function (o) { if (o.isInstancedMesh) o.frustumCulled = false; });
 setSeason('spring');
 seasonT = 1;
 applySeasonTransition(0);

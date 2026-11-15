@@ -8,7 +8,7 @@ A single-file, fully 3D portfolio built with [Three.js](https://threejs.org/) �
 
 - **Procedural archipelago** — a hub plaza ringed by four floating islands at different heights, joined by arched bridges; terrain, paths, trees, grass and boulders are generated at load time from value noise, no external assets
 - **4 shrine islands, each with its own character** — About has a koi lake ringed with stones, Projects a ridged rock massif where a stream drops over a horseshoe cliff into a plunge pool, Stack fenced farm fields (wheat, rice paddy, cabbages, pumpkins, a scarecrow), and Contact a bamboo grove where a sage keeps watch by the shrine. Each also has its own houses, square and residents
-- **Living villagers** — each lives on a home island, walks its paths, crosses bridges to visit the others, and stops to face and talk with whoever they meet; clickable for a short bio
+- **Living villagers with jobs** — 26 residents, each a named character whose role explains part of the portfolio (the Blacksmith talks Zenith, the Observatory Keeper Trace, the farmers the tech stack, the Letter Writer how to get in touch). They live on a home island, cross bridges to visit, stop to chat, and their cards link to the project they speak for
 - **Real-time day/night cycle** — sun/moon position, sky color, and lantern glow all track the actual system clock
 - **Seasons** — spring/summer/autumn/winter rotate on a 90-second timer, each with its own palette, sky, and falling particles (blossoms, leaves, snow)
 - **Realistic rendering** — procedurally textured materials (grass, wood grain, shingles, stone), image-based sky lighting, soft shadows, and a post-processing pipeline (bloom, gamma correction, vignette)
@@ -46,6 +46,8 @@ then visit `http://localhost:8000`.
 | Drag / one-finger swipe | Orbit camera |
 | Right-drag / Shift-drag / two-finger drag | Move the view across the islands |
 | W A S D / arrow keys | Move the view; Q and E turn |
+| Scroll | Zoom toward the cursor, so you travel to where you point |
+| Double-click ground | Fly there |
 | Scroll / pinch | Zoom |
 | Click / tap a shrine or villager | Open its card |
 | Return to overview | Exit the current shrine/villager view |
