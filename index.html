@@ -1929,19 +1929,19 @@ function buildVillager(seed) {
 
 function makeBubbleSprite() {
   var canvas = document.createElement('canvas');
-  canvas.width = 320; canvas.height = 96;
+  canvas.width = 512; canvas.height = 224;
   var tex = new THREE.CanvasTexture(canvas);
   var mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
   var sprite = new THREE.Sprite(mat);
-  sprite.scale.set(1.9, 0.57, 1);
-  sprite.position.y = 2.05;
+  sprite.scale.set(3.3, 1.444, 1);
+  sprite.position.y = 2.7;
   sprite.visible = false;
   sprite.renderOrder = 999;
   function setText(text) {
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     var padX = 18;
-    ctx.font = '28px var(--sans)';
+    ctx.font = '25px Inter, system-ui, sans-serif'; /* canvas can't read CSS variables */
     var words = text.split(' ');
     var lines = [], cur = '';
     for (var i = 0; i < words.length; i++) {
@@ -1950,15 +1950,15 @@ function makeBubbleSprite() {
       else cur = test;
     }
     if (cur) lines.push(cur);
-    var lineH = 32;
+    var lineH = 30;
     var boxH = lines.length * lineH + 26;
     var boxY = canvas.height - boxH;
-    ctx.fillStyle = 'rgba(19,17,23,0.72)';
+    ctx.fillStyle = 'rgba(8,8,10,0.88)';
     ctx.strokeStyle = 'rgba(245,245,247,0.35)';
     ctx.lineWidth = 2;
     roundRect(ctx, 4, boxY, canvas.width - 8, boxH - 6, 12);
     ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#f3ede2';
+    ctx.fillStyle = '#f5f5f7';
     ctx.textBaseline = 'middle';
     lines.forEach(function (ln, li) {
       ctx.fillText(ln, padX, boxY + 18 + li * lineH);
@@ -2017,93 +2017,93 @@ var BIO_LINES = [
 var npcGroup = new THREE.Group();
 islandGroup.add(npcGroup);
 var villagers = [];
-/* Every resident has a job that explains part of the portfolio: what each island is for, a project,
-   a skill or a way to get in touch. Facts come from the repos and resume; lines are what they say
-   when idle or when they meet someone. */
-var GH_ = 'https://github.com/ItzAditya43/';
+/* Every resident has a job that happens to explain part of the portfolio, and a mood. The bio is
+   how they'd say it themselves; lines are what they mutter or call out. Facts come from the repos
+   and resume. Keep lines short: they have to fit a speech bubble. */
+var GH_ = "https://github.com/ItzAditya43/";
 var NPC_PROFILES = [
   /* ---- hub plaza ---- */
   [
-    { name: 'Haru', role: 'Town Crier', bio: 'Announces what is new in the village. Will tell anyone who stands still long enough that four islands hold four sides of Aditya: who he is, what he builds, how he builds it, and how to reach him.',
-      lines: ['Hear ye! Four islands, four shrines. Cross the bridges!', 'New here? The shrine on each island opens a card about Aditya.', 'The "All work" button up top lists every project at once.', 'Spring, summer, autumn, winter. The seasons turn every ninety seconds.'] },
-    { name: 'Aiko', role: 'Ferry Guide', bio: 'Walks visitors across the bridges. Knows which island suits what you want to see: the lake for the story, the mountain for the projects, the farm for the tools, the bamboo grove for saying hello.',
-      lines: ['Projects? The mountain island with the waterfall.', 'Want the person behind it? The koi lake.', 'Tools and skills? Follow the bridge to the farm.', 'Mind the bridge rails, they are freshly painted.'] },
-    { name: 'Kenji', role: 'Lantern Keeper', bio: 'Lights every lantern at dusk, and says each one is a project Aditya got running: dark until someone wrote the last line, then it glows. Keeps count on a string of knots.',
-      lines: ['Another lantern lit. Another bug closed.', 'The sky lanterns rise at night. Look up after dark.', 'Real clock, real sun. The village keeps your local time.', 'A project is not done until it runs on someone else\'s machine.'] },
-    { name: 'Yui', role: 'Courier', bio: 'Carries messages between the islands, and has delivered more than a few emails to Aditya. Ask her how to reach him and she will point you at the bamboo grove.',
-      lines: ['A letter for the bamboo grove, as always.', 'Email, GitHub, LinkedIn: all at the Contact shrine.', 'I run between islands so you do not have to.', 'Quicker by bridge than by cloud.'],
-      links: [['Email', 'mailto:aditya20pnd@gmail.com']] }
+    { name: "Haru", role: "Town Crier", bio: "I shout, people walk past. Four islands, four shrines, bridges between them. That's the whole announcement. Aditya built the village so I'd have a job, which is nice, and nobody listens, which is not.",
+      lines: ["Hear ye. Hear ye. Nobody's listening, but hear ye.", "The big glowy buildings are shrines. You'll figure it out.", "Yes, the seasons really do change every ninety seconds. I didn't ask for it.", "Tourists. First question's always the waterfall."] },
+    { name: "Aiko", role: "Guide", bio: "Lake for the story, mountain for the projects, farm for the tools, bamboo for saying hello. I've said that eleven times today and I'm still excited. Ask me why. Go on. Ask.",
+      lines: ["Mountain's that way! Go, go, go!", "You haven't tried the bridges yet? Bold.", "Mind the rails. Pretty, but the drop is very real.", "Best part of my job: everyone's happy to be here."] },
+    { name: "Kenji", role: "Lantern Keeper", bio: "Every dusk I light every lantern. Every dawn they go out on their own. Nobody's ever thanked me. Aditya calls it ambient atmosphere. I call it my knees.",
+      lines: ["Another night, another forty lanterns.", "Those floating ones aren't mine. I'd never let them wander off like that.", "Real sun, real clock. Check your own watch, I did.", "If the light flickers, it's not me. Probably."] },
+    { name: "Yui", role: "Courier", bio: "I run letters between islands. Mostly to the bamboo grove, mostly emails, which I do not understand. His address is aditya20pnd@gmail.com. I've memorised it. Please use it so I can stop.",
+      lines: ["No time, no time, letter for the grove!", "Why am I carrying email? Nobody tells me anything.", "Want him? Try the grove. Not me. I'm busy.", "Bridge, bridge, bridge, bridge."],
+      links: [["Email", "mailto:aditya20pnd@gmail.com"]] }
   ],
   /* ---- About: the koi lake ---- */
   [
-    { name: 'Sora', role: 'Koi Keeper', bio: 'Feeds the koi at dawn. Says Aditya got into programming almost by accident and stayed because of the problems: "I could use an existing solution, but where is the learning experience in that?"',
-      lines: ['The orange one is the greedy one.', 'Eleven koi, and each knows its own spot.', 'Aditya says he is an accidental programmer. The koi approve.', 'Quiet water, clear thoughts.'] },
-    { name: 'Ren', role: 'Fisher', bio: 'Never catches anything and does not mind. Likes to say Aditya builds the same way: sit with a problem long enough and it bites.',
-      lines: ['No luck today. Wonderful day regardless.', 'Patience is most of engineering.', 'The jetty is the best seat on the island.', 'Some builds take days. Some fish take longer.'] },
-    { name: 'Mika', role: 'Storyteller', bio: 'Tells how Aditya is studying Computer Science & Design at RGIPT (2023 to 2027), is based in Mumbai, and qualified GATE 2026 in his pre-final year.',
-      lines: ['B.Tech in Computer Science & Design, RGIPT, 2023 to 2027.', 'Qualified GATE 2026 while still in his pre-final year.', 'He solved a hundred-odd problems on LeetCode and CodeChef for fun.', 'AWS Cloud Practitioner Essentials, 2026. Another stone on the wall.'],
-      links: [['LeetCode', 'https://leetcode.com/u/Adi0026/'], ['CodeChef', 'https://www.codechef.com/users/adityapnd10']] },
-    { name: 'Daichi', role: 'Stonemason', bio: 'Built the stone ring around the lake. Says Aditya picks problems like stones: heavy enough to matter, and fits only when set properly.',
-      lines: ['Every stone here was set by hand.', 'A good wall needs no mortar, only patience.', 'Build it once, build it right, then build the next.', 'Notice how none of the stones match? Neither do the projects.'] },
-    { name: 'Nao', role: 'Tea Seller', bio: 'Serves tea by the lake. Hears all the gossip, and says the most-told story is the 17.8M-parameter keyboard model that fits on a phone.',
-      lines: ['Tea? Fresh from the pot.', 'Ask about the keyboard with no app icon. It is a good story.', 'Aditya trained an LLM on a 4GB laptop GPU. Ambitious.', 'Everyone leaves calmer than they arrived.'] },
-    { name: 'Toshi', role: 'Elder', bio: 'Has watched the village grow from one island to five. Remembers when it was a single floating plain with four shrines, before the bridges.',
-      lines: ['This used to be one island. Four shrines, no bridges.', 'Aditya rebuilt it bigger. He always does.', 'Build. Break. Learn. Repeat. Words from the first shrine.', 'The koi were here before the village.'] }
+    { name: "Sora", role: "Koi Keeper", bio: "Eleven fish, eleven names, zero gratitude. Aditya says he's an accidental programmer, coffee at night, that sort of thing. I think the accident stuck. They don't leave you alone once it starts working.",
+      lines: ["The white one hasn't eaten in two days. Drama.", "Don't tap the water. They hate it.", "Orange one stole lunch again.", "I talk to them more than I talk to people. They listen better."] },
+    { name: "Ren", role: "Fisher", bio: "Haven't caught a thing in six years. Wouldn't know what to do with one. The jetty's mine, find your own.",
+      lines: ["Shh. Something might bite. It won't.", "Fishing is sitting with a stick. I'm good at it.", "Aditya stays up all night on bugs. I'd rather nap.", "No bait since spring. Not worried."] },
+    { name: "Mika", role: "Storyteller", bio: "He's at RGIPT for Computer Science and Design, class of 2027, from Mumbai. Qualified GATE 2026 a year early, which he mentions exactly never, so I do. I tell it better with an audience. Stay.",
+      lines: ["A hundred-plus problems on LeetCode and CodeChef, and he still says he's rusty.", "AWS Cloud Practitioner, this year. He'd rather be building.", "Gather round. No, wait. You're already here.", "Mumbai kid. Odd projects. Strong opinions about terminals."],
+      links: [["LeetCode", "https://leetcode.com/u/Adi0026/"], ["CodeChef", "https://www.codechef.com/users/adityapnd10"]] },
+    { name: "Daichi", role: "Stonemason", bio: "Every stone around the lake, mine. Forty-odd, no two alike, one nearly fell in. Don't lean on it.",
+      lines: ["Rocks don't argue. That's why I like them.", "That one's loose. Not my fault.", "He asked for rustic. I said it'd cost extra.", "Yes, it's crooked. On purpose."] },
+    { name: "Nao", role: "Tea Seller", bio: "Tea's free. Gossip costs extra. Best one I've got: Aditya put a 17.8-million-parameter model inside a phone keyboard. A keyboard. It doesn't even have an app icon.",
+      lines: ["Psst. The keyboard has no icon. Wild.", "He trained a language model on a 4GB GPU. Allegedly.", "More tea? Still free.", "I hear everything. Mostly about bugs."] },
+    { name: "Toshi", role: "Elder", bio: "This place started as one island with four shrines and no bridges. You walked everywhere, you looked at the grass, you were home by dark. Now there are five islands and everybody's in a hurry. Back in my day the grass was shorter.",
+      lines: ["Back in my day we had one island.", "Build, break, learn, repeat. Painted on the first shrine. Still true, annoyingly.", "My knees remember before the bridges.", "Don't tell the others, but I like the lake best."] }
   ],
-  /* ---- Projects: the mountain and waterfall ---- */
+  /* ---- Projects: the mountain ---- */
   [
-    { name: 'Ryo', role: 'Blacksmith', bio: 'Forges the big things. Proudest of Zenith, the self-hosted AI workspace on local Ollama models: chat, a coding agent that asks before it acts, research, memory, image generation and voice. Nothing leaves the machine.',
-      lines: ['Zenith: the whole AI workspace, on your own machine.', 'The agent asks before it acts. Good manners for a tool.', 'No cloud, no accounts, nothing leaves your machine.', 'Hot iron, cold logic.'],
-      links: [['Zenith', GH_ + 'Zenith'], ['Live', 'https://itzaditya43.github.io/Zenith/']] },
-    { name: 'Emi', role: 'Apprentice Scribe', bio: 'Copies out the story of Zenith-AI: a language model written from scratch. Tokenizer, transformer, training loop, inference, all trained on a single 4GB GPU. No pretrained weights.',
-      lines: ['Every layer written by hand. Attention, RoPE, the KV cache.', 'Trained on a 4GB laptop GPU. Imagine.', 'No pretrained weights. It learned here.', 'My ink is nearly gone, but the loss is still falling.'],
-      links: [['Zenith-AI', GH_ + 'Zenith-AI']] },
-    { name: 'Hana', role: 'Observatory Keeper', bio: 'Watches the machine instead of the sky. Keeper of Trace: a Linux observatory that shows what the computer is doing, remembers it, and explains why it is slow or hot. Built in Rust with Tauri and React.',
-      lines: ['Trace tells you why the machine is slow.', 'Processes, cgroups, systemd, Docker, GPU: all in one view.', 'Rust and Tauri. Fast and native.', 'Measure first, then guess less.'],
-      links: [['Trace', GH_ + 'Trace']] },
-    { name: 'Ken', role: 'Keysmith', bio: 'Makes keys of another sort. MyKey is a private Android keyboard that never sends what you type anywhere, with glide typing, five languages, and a 17.8M-parameter model running on the phone. It has no app icon.',
-      lines: ['MyKey never sends a single keystroke anywhere.', 'The model lives on the phone. 17.8 million parameters.', 'No app icon, on purpose. Open it from the keyboard.', 'Type in peace.'],
-      links: [['MyKey', GH_ + 'MyKey']] },
-    { name: 'Rin', role: 'Water Surveyor', bio: 'Studies where water runs out. DayZero computes the month a real neighbourhood goes dry from building footprints and 34 years of climate history, then finds the cheapest plan to buy those months back. Built for NextStep Hacks 2026.',
-      lines: ['DayZero: when does this place run out of water?', 'Thirty-four years of climate history for one answer.', 'Then it finds the cheapest way to buy months back.', 'Cape Town counted down to its Day Zero in 2018.'],
-      links: [['DayZero', 'https://dayzero-cuy1.onrender.com'], ['GitHub', GH_ + 'DayZero']] },
-    { name: 'Goro', role: 'Projectionist', bio: 'Runs the village cinema. SameSecond keeps everyone on the same second of a video with no re-streaming, so Netflix and Crunchyroll work too, on Cloudflare Workers with Durable Objects. Also minds Higanbana, the anime streaming site.',
-      lines: ['SameSecond: everyone on the same second.', 'Your own player, your own account, one shared moment.', 'It runs free on Cloudflare Workers.', 'Higanbana streams the anime. SameSecond syncs the friends.'],
-      links: [['SameSecond', 'https://samesecond.itzaditya43.workers.dev'], ['Higanbana', 'https://higanbana.xyz']] }
+    { name: "Ryo", role: "Blacksmith", bio: "Zenith. My best work, and I didn't even write it. An AI workspace that runs on your own Ollama models: chat, a coding agent that asks before it touches anything, research, memory, voice, images. Nothing phones home. I'd say it twice but I'm busy.",
+      lines: ["Zenith. Look it up. Don't make me repeat myself.", "The agent asks first. Unlike my apprentices.", "No cloud. No accounts. Nothing leaves your machine.", "Stand back. Hammering."],
+      links: [["Zenith", GH_ + "Zenith"], ["Live", "https://itzaditya43.github.io/Zenith/"]] },
+    { name: "Emi", role: "Scribe", bio: "I'm copying out Zenith-AI by hand. It's a language model written from scratch: tokenizer, transformer, training loop, all of it, trained on one 4GB GPU. No pretrained weights, so I can't even copy those. My wrist hurts.",
+      lines: ["Another page of attention math. Pray for me.", "Four gigabytes. He trained it on four gigabytes.", "Loss went down again. I have no idea why I care.", "Ink. Need ink."],
+      links: [["Zenith-AI", GH_ + "Zenith-AI"]] },
+    { name: "Hana", role: "Observatory Keeper", bio: "Trace watches the machine so I don't have to. CPU, memory, temperatures, why it's slow, why it's hot. I check it forty times a day. It's Rust and Tauri, in case you wondered. Aditya says checking is healthy.",
+      lines: ["The fans sound loud. Is that loud? That's loud.", "Something's eating memory. I'll find it.", "Trace says everything's fine. I don't believe it.", "Never trust a green dashboard."],
+      links: [["Trace", GH_ + "Trace"]] },
+    { name: "Ken", role: "Keysmith", bio: "MyKey is a keyboard for Android and it never sends a keystroke anywhere. Five languages, a tiny model on the phone guessing your next word. No app icon either. You'll hate that for about a week.",
+      lines: ["Nothing you type leaves the phone. Nothing.", "No icon, I know. Long-press the globe key.", "Seventeen million parameters, in your pocket.", "I typed this line myself. Nobody saw it."],
+      links: [["MyKey", GH_ + "MyKey"]] },
+    { name: "Rin", role: "Water Surveyor", bio: "DayZero works out the month a real neighbourhood runs dry, from building footprints and thirty-four years of climate data, then finds the cheapest fix. Bleak? Yes. Useful? Also yes. Built for NextStep Hacks 2026.",
+      lines: ["Cape Town nearly ran out in 2018. Most places haven't checked.", "Good news: there's a plan. Bad news: it's the cheap one.", "It's on a free server, so it sleeps. Give it a minute.", "Drink some water. Seriously."],
+      links: [["DayZero", "https://dayzero-cuy1.onrender.com"], ["GitHub", GH_ + "DayZero"]] },
+    { name: "Goro", role: "Projectionist", bio: "SameSecond keeps everyone's player on the same second so you can watch together without streaming it through anybody. YouTube links, Netflix, Crunchyroll, all work. I also look after Higanbana on the side. Anime. Obviously.",
+      lines: ["Three, two, one, press play. Everyone? Everyone?", "Someone paused. Someone always pauses.", "No lag, because the video never leaves your device.", "Popcorn not included. I checked."],
+      links: [["SameSecond", "https://samesecond.itzaditya43.workers.dev"], ["Higanbana", "https://higanbana.xyz"]] }
   ],
   /* ---- Stack: the farm ---- */
   [
-    { name: 'Tamako', role: 'Wheat Farmer', bio: 'Says the wheat field is Python: the staple, planted first and in every row. FastAPI, Flask and Django are what you bake from it. PyTorch is the rice.',
-      lines: ['Python is the wheat. Plant it everywhere.', 'FastAPI for the bread, Django for the feast.', 'Good soil, good yield. Same with a clean codebase.', 'Plant early, test often.'] },
-    { name: 'Takeshi', role: 'Rice Grower', bio: 'Keeps the flooded paddy: deep learning. Transformers, scikit-learn and OpenCV all grow best with patient water. Evaluates every harvest before trusting it.',
-      lines: ['The paddy is the ML field. PyTorch, transformers, scikit-learn.', 'Rice teaches patience. So does training.', 'Always evaluate the harvest before trusting it.', 'Water, wait, measure.'] },
-    { name: 'Sakura', role: 'Cabbage Gardener', bio: 'Tends the LLM stack: Ollama, LangChain, RAG, MCP, FAISS and ChromaDB. Everything is local-first, so the vegetables never leave the garden.',
-      lines: ['Ollama models, grown right here, not shipped in.', 'RAG is just good soil for the answer.', 'MCP connects the tools like a garden gate.', 'Local-first: nothing leaves the garden.'] },
-    { name: 'Shin', role: 'Fence Builder', bio: 'Builds the backends: FastAPI, Node and Express, WebSockets, PostgreSQL, MongoDB. Everything behind the fence is solid so the front can stay pretty.',
-      lines: ['A fence is just an API with a good contract.', 'Postgres for what must not be lost.', 'WebSockets: a gate that stays open both ways.', 'Strong posts, straight rails.'] },
-    { name: 'Midori', role: 'Pumpkin Grower', bio: 'Responsible for the front of house: TypeScript, React, Next.js, Three.js. Takes credit for how nice the village looks from the road.',
-      lines: ['This whole village is Three.js. One HTML file.', 'TypeScript catches the weeds before harvest.', 'Pretty is a feature, not a luxury.', 'Pumpkins are a frontend. They are mostly presentation.'] },
-    { name: 'Gen', role: 'Mill Keeper', bio: 'Grinds it all together: Docker, GitHub Actions, Git, Linux (Arch with Hyprland, naturally), Cloudflare. Insists that shipping is part of building.',
-      lines: ['Docker: every crop in its own sack.', 'Arch, btw. With Hyprland.', 'CI is the miller. Nothing leaves unmilled.', 'It does not count until it ships.'] }
+    { name: "Tamako", role: "Wheat Farmer", bio: "Wheat is Python. First thing planted, grows everywhere, feeds everything else. FastAPI, Flask, Django, it's all bread in the end.",
+      lines: ["Python again. Python again.", "I plant in rows. The linters approve.", "Don't walk on the wheat.", "Good soil, good code. Same rule."] },
+    { name: "Takeshi", role: "Rice Grower", bio: "The paddy's the machine learning field. PyTorch, scikit-learn, transformers. You flood it, you wait, you measure what came up. Most days nothing came up. That's training.",
+      lines: ["Loss curve's flat. So am I.", "Wait. Measure. Wait.", "Overfit again. The whole field memorised the test set.", "Don't stand in the paddy. Boots."] },
+    { name: "Sakura", role: "Cabbage Gardener", bio: "I grow the language-model side: Ollama, LangChain, RAG, MCP, FAISS, ChromaDB. All of it runs locally, so the vegetables never travel. Retrieval-augmented cabbage is a real thing now. Don't look it up.",
+      lines: ["Local-first. Eat what you grow.", "Ollama's in the shed. Don't ask.", "Retrieval-augmented cabbage. Yes.", "MCP is a gate. That's all I'll say."] },
+    { name: "Shin", role: "Fence Builder", bio: "Backends. FastAPI, Node, Express, WebSockets, Postgres, Mongo. You never see my work unless it breaks. So, mostly invisible.",
+      lines: ["Fence is fine. Nobody notices. Good.", "Post, rail, post, rail. Riveting.", "WebSockets: the gate that stays open.", "If it's down, it's DNS. It's always DNS."] },
+    { name: "Midori", role: "Pumpkin Grower", bio: "I'm the frontend. TypeScript, React, Next.js, Three.js. This whole village is Three.js in one HTML file. You're welcome. Pumpkins photograph best, by the way.",
+      lines: ["Notice the lighting? That's me.", "TypeScript caught nine weeds before breakfast.", "Don't squash the merchandise.", "One HTML file. Let that sink in."] },
+    { name: "Gen", role: "Mill Keeper", bio: "I ship it. Docker, GitHub Actions, Git, Linux. Arch, with Hyprland, because apparently he enjoys suffering. If it doesn't deploy, it doesn't count.",
+      lines: ["I use Arch, btw.", "CI failed. Of course it failed.", "One container per crop. Don't mix them.", "Works on my machine is not shipped."] }
   ],
   /* ---- Contact: the bamboo grove ---- */
   [
-    { name: 'Sumi', role: 'Letter Writer', bio: 'Writes letters for those who cannot find the words. The fastest way to reach Aditya is email; GitHub and LinkedIn work too.',
-      lines: ['Email is quickest: aditya20pnd@gmail.com.', 'Say what you are building. He likes a good problem.', 'Collaborations welcome. Tubcal was one.', 'Do not be shy. Write.'],
-      links: [['Email', 'mailto:aditya20pnd@gmail.com'], ['LinkedIn', 'https://www.linkedin.com/in/adityapandey10/']] },
-    { name: 'Akira', role: 'Wandering Monk', bio: 'Walks the bamboo paths between shrines. Looking for open source projects to contribute to, as Aditya is. Says that is the proper way to meet strangers: through work.',
-      lines: ['Looking for open source to join. So is Aditya.', 'Good code is a quiet kind of kindness.', 'GitHub is the village square.', 'Every pull request is a small bow.'],
-      links: [['GitHub', 'https://github.com/ItzAditya43']] },
-    { name: 'Kaede', role: 'Competitor', bio: 'Trains on the grove\'s open ground. Keeps up with Aditya\'s Kaggle runs, including an AI agent for a Pokémon card game, and the rated contests on CodeChef and LeetCode.',
-      lines: ['Kaggle: a Pokémon TCG battle agent in progress.', 'Rated contests keep the mind sharp.', 'A hundred-plus problems solved. Still going.', 'Compete with the old you.'],
-      links: [['Kaggle', 'https://www.kaggle.com/adipandey777'], ['LeetCode', 'https://leetcode.com/u/Adi0026/']] },
-    { name: 'Natsu', role: 'Tea Brewer', bio: 'Always has a pot ready. Says conversations about local-first AI, self-hosted stacks and Hyprland configs are the best use of one.',
-      lines: ['Tea, and a chat about self-hosted stacks?', 'Hyprland configs welcome. Bring screenshots.', 'Sit. Stay a while.', 'Good conversation beats good tea. Barely.'],
-      links: [['X / Twitter', 'https://x.com/adityapnd10']] },
-    { name: 'Rei', role: 'Gate Warden', bio: 'Guards the torii at the grove\'s entrance. Everyone is welcome, though he asks visitors to take a moment before going in.',
-      lines: ['Welcome. Take a breath before you enter.', 'The shrine is straight ahead.', 'The gate is open to anyone with a good question.', 'Mind the lanterns at night.'] },
-    { name: 'Kazu', role: 'Bamboo Cutter', bio: 'Thins the grove each year, because bamboo that is not cut chokes itself. Says the same of side projects, and of Aditya\'s habit of finishing them.',
-      lines: ['Bamboo grows a metre a day when it is happy.', 'Cut what you do not need. Keep what you do.', 'Finished beats perfect.', 'Strong because hollow. Flexible because jointed.'] }
+    { name: "Sumi", role: "Letter Writer", bio: "Quickest way to reach Aditya is email: aditya20pnd@gmail.com. GitHub and LinkedIn work too. Tell him what you're building. Please say hello first. Resumes with no hello make my ink dry up.",
+      lines: ["Writing back is the nice part.", "Collaborations, yes. Tubcal was one.", "A hello costs nothing. Say hello.", "Email beats smoke signals. Barely."],
+      links: [["Email", "mailto:aditya20pnd@gmail.com"], ["LinkedIn", "https://www.linkedin.com/in/adityapandey10/"]] },
+    { name: "Akira", role: "Wandering Monk", bio: "I walk. Mostly between shrines, sometimes back. Aditya's looking for open source projects to contribute to, which I respect, being unable to commit to anything myself.",
+      lines: ["A pull request is a very small bow.", "Hmm. Hmm. Mm.", "Enlightenment is a long build finally finishing.", "I've been meaning to learn Rust. For six lives now."],
+      links: [["GitHub", "https://github.com/ItzAditya43"]] },
+    { name: "Kaede", role: "Competitor", bio: "Training for the next contest. Aditya has the CodeChef and LeetCode rounds, a hundred-plus problems, and a Kaggle agent for the Pokémon card game that he is still working on. Beat my record. I dare you.",
+      lines: ["Rated round tonight. Bring snacks.", "Pokémon cards, and he's serious about it.", "A hundred problems? Cute.", "Speed or correctness? Both. Always both."],
+      links: [["Kaggle", "https://www.kaggle.com/adipandey777"], ["LeetCode", "https://leetcode.com/u/Adi0026/"]] },
+    { name: "Natsu", role: "Tea Brewer", bio: "Tea. Hot. Sit. Self-hosted stacks, Hyprland configs and local-first AI are the only conversations worth the pot, so pick one.",
+      lines: ["Mmm. Tea.", "Sit. No, actually sit.", "Hyprland configs? I've seen things.", "Zzz... what? I'm awake."],
+      links: [["X / Twitter", "https://x.com/adityapnd10"]] },
+    { name: "Rei", role: "Gate Warden", bio: "I guard the gate. Everyone's allowed through. I just like standing here looking important. Shrine's straight ahead.",
+      lines: ["State your business. ...Fine, go in.", "Lanterns at night. Don't kick them.", "Stand behind the line, please.", "Seen every visitor. Remember none."] },
+    { name: "Kazu", role: "Bamboo Cutter", bio: "Bamboo grows a metre a day when it's happy and chokes itself when it isn't. So I cut some every year. Same rule for side projects: prune them or they eat the island.",
+      lines: ["Cut it. It grows back by Tuesday.", "Hollow inside. Strong anyway. Relatable.", "Watch your head.", "Told the grove I'd thin it. The grove said no."] }
   ]
 ];
 var ISLE_NAMES = ['the plaza'].concat(SHRINE_DATA.map(function (d) { return d.name + ' isle'; }));
@@ -3141,12 +3141,12 @@ var bambooLeafMat = new THREE.MeshStandardMaterial({ map: leafCardTex, alphaTest
     state: 'idle', idleTimer: 4, speed: 0, walkPhase: 0, heading: Math.atan2(sp.x - adx / al * 5 - sx, sp.z - adz / al * 5 - sz),
     bubble: bubble, bubbleTimer: 0, currentLine: null, replyAt: 0, replyLine: null,
     name: 'The Sage', role: 'Sage · keeper of the bamboo grove', lines: null,
-    bio: 'Has kept watch from this rock beside the shrine longer than the bamboo has stood. Answers most questions with a better question.'
+    bio: 'I was here before the bamboo and I expect to be here after it. I do not know the way to anywhere. Ask me something and I will ask you something back. It is cheaper than answers.'
   });
 })();
 var SAGE_LINES = [
-  'Bamboo bends, and so it stands.', 'Ship small. Ship often. Then listen.', 'A quiet mind debugs fastest.',
-  'The road between islands is also the village.', 'What you build teaches you what to build next.', 'Sit. The wind has something to say.'
+  'Mm.', 'Ship small. Ship often. Then listen to what breaks.', 'Sit. The wind is in a mood today.',
+  'Whatever you build teaches you what to build next. Annoying, but true.', 'Ask me anything. I will answer with a question. It is a flaw.', 'I was here before the bamboo. The bamboo disagrees.'
 ];
 
 villagers.forEach(function (v) { if (v.name === 'The Sage') v.lines = SAGE_LINES; });
