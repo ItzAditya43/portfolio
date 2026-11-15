@@ -19,13 +19,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
   :root{
-    /* colours: Higanbana only (true black, neutral greys, spider-lily red, gold). Shapes and type: Higanbana + Sourcemark */
+    /* colours: Higanbana red + true black / neutral greys only. No yellow anywhere in the UI. Shapes and type: Higanbana + Sourcemark */
     --ink: #000000;
     --paper: #f5f5f7;
     --gate-red: #b5122f;
     --gate-red-bright: #ff4d6a;
     --accent: #e0193f;
-    --gold: #ffbf57;
+    --gold: #ff4d6a;
     --glass: rgba(14,14,16,0.72);
     --line: rgb(38,38,44);
     --line-strong: rgb(62,62,70);
@@ -48,7 +48,7 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     transition: opacity 0.9s ease;
   }
-  #loading .mark{ font-size:15vw; line-height:1; color: var(--gold); opacity:0.9; }
+  #loading .mark{ font-size:15vw; line-height:1; color: var(--accent); opacity:0.9; }
   #loading .sub{
     margin-top:14px; font-size:13px; letter-spacing:0.35em; text-transform:uppercase;
     color: rgba(245,245,247,0.55); font-family: var(--sans);
@@ -86,7 +86,7 @@
     display:flex; align-items:center; gap:12px;
   }
   #watch-face{ width:52px; height:52px; flex:0 0 auto; }
-  #watch-face circle.rim{ fill:rgba(0,0,0,0.5); stroke:rgba(255,191,87,0.55); stroke-width:2.5; }
+  #watch-face circle.rim{ fill:rgba(0,0,0,0.5); stroke:rgba(255,77,106,0.55); stroke-width:2.5; }
   #watch-face line.tick{ stroke:rgba(245,245,247,0.4); stroke-width:2; }
   #watch-face line.hand{ stroke-linecap:round; }
   #hand-hour{ stroke:var(--paper); stroke-width:4; }
@@ -95,7 +95,7 @@
   #watch-text{ text-align:right; }
   #digital-time{ font-size:16px; letter-spacing:0.05em; color:var(--paper); }
   #digital-date{ font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:rgba(245,245,247,0.55); margin-top:2px; }
-  #daynight-label{ font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color: var(--gold); margin-top:4px; }
+  #daynight-label{ font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color: rgba(245,245,247,0.7); margin-top:4px; }
 
   #hint{
     align-self:center; margin-bottom:36px; font-family: var(--sans); font-size:11px;
@@ -122,7 +122,7 @@
     position:fixed; top:24px; left:50%; transform:translateX(-50%);
     font-family: var(--sans); font-size:11px; letter-spacing:0.25em; text-transform:uppercase;
     color: rgba(245,245,247,0.85); background: rgba(0,0,0,0.45);
-    border:1px solid rgba(255,191,87,0.35); padding:9px 20px; cursor:pointer;
+    border:1px solid rgba(255,77,106,0.35); padding:9px 20px; cursor:pointer;
     opacity:0; pointer-events:none; transition: opacity 0.4s ease;
     z-index:25; backdrop-filter: blur(6px);
   }
@@ -144,7 +144,7 @@
     left:50%; top:50%;
   }
   .floating-card::-webkit-scrollbar{ width:6px; }
-  .floating-card::-webkit-scrollbar-thumb{ background: rgba(255,191,87,0.4); border-radius:3px; }
+  .floating-card::-webkit-scrollbar-thumb{ background: rgba(255,77,106,0.4); border-radius:3px; }
 
   .shrine-nav{
     position:fixed; top:50%; transform:translateY(-50%);
@@ -161,7 +161,7 @@
   .shrine-nav.right{ right:24px; }
   .floating-card.visible{ opacity:1; transform:translate(-50%,-50%) scale(1); pointer-events:auto; }
   .floating-card .eyebrow{
-    font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color: var(--gold); margin-bottom:8px;
+    font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color: var(--gate-red-bright); margin-bottom:8px;
   }
   .floating-card h3{
     font-family: var(--serif); font-size:18px; margin:0 0 9px 0; color: var(--paper); font-weight:400;
@@ -171,14 +171,14 @@
   .floating-card li{ font-size:12px; color: rgba(245,245,247,0.78); margin-bottom:6px; line-height:1.5; }
   .floating-card li a.proj-link{
     display:inline-block; margin-left:4px; font-size:10.5px; letter-spacing:0.05em;
-    color: var(--gold); text-decoration:none; border-bottom:1px solid rgba(255,191,87,0.4);
+    color: var(--gold); text-decoration:none; border-bottom:1px solid rgba(255,77,106,0.4);
     white-space:nowrap;
   }
   .floating-card li a.proj-link:hover{ color: var(--paper); border-color: var(--paper); }
   .floating-card a.link{
     display:inline-block; margin-top:4px; margin-right:14px; font-size:10px; letter-spacing:0.18em;
     text-transform:uppercase; color: var(--gold); text-decoration:none;
-    border-bottom: 1px solid rgba(255,191,87,0.4); padding-bottom:2px;
+    border-bottom: 1px solid rgba(255,77,106,0.4); padding-bottom:2px;
   }
   .floating-card a.link:hover{ color: var(--paper); border-color: var(--paper); }
   .floating-card.wide{ width:340px; }
@@ -186,7 +186,7 @@
   /* ---- portfolio layer: identity, nav, intro, list view ---- */
   #hud .title .role{
     display:block; font-family: var(--sans); font-size:11px; letter-spacing:0.14em;
-    text-transform:uppercase; color: var(--gold); margin-top:6px;
+    text-transform:uppercase; color: rgba(245,245,247,0.78); margin-top:6px;
   }
   #hint{ margin-bottom:88px; }
   #poi-labels, #hint{ transition: opacity 0.6s ease; }
@@ -208,8 +208,8 @@
     text-transform:uppercase; color: rgba(245,245,247,0.82); transition: color 0.2s ease, background 0.2s ease;
   }
   #site-nav button:hover{ color: var(--gold); }
-  #site-nav button.active{ color: var(--gold); background: rgba(255,191,87,0.14); }
-  #site-nav button.primary{ background: var(--gold); color:#16131a; font-weight:600; }
+  #site-nav button.active{ color: var(--gold); background: rgba(255,77,106,0.14); }
+  #site-nav button.primary{ background: var(--accent); color:#fff; font-weight:600; }
   #site-nav button.primary:hover{ background: var(--paper); color:#16131a; }
   button:focus-visible, a:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
 
@@ -221,7 +221,7 @@
   #intro.hidden{ opacity:0; visibility:hidden; transition: opacity 0.7s ease, visibility 0s linear 0.7s; }
   #intro .inner{ pointer-events:auto; max-width:540px; padding:0 clamp(22px, 6vw, 88px); }
   #intro .eyebrow{
-    font-family: var(--sans); font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color: var(--gold);
+    font-family: var(--sans); font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color: var(--gate-red-bright);
   }
   #intro h1{ font-weight:400; font-size:clamp(38px, 6vw, 66px); line-height:1.05; margin:14px 0 16px 0; letter-spacing:0.01em; }
   #intro p{ font-family: var(--sans); font-size:16px; line-height:1.6; color: rgba(245,245,247,0.86); margin:0 0 26px 0; }
@@ -233,7 +233,7 @@
     transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
   }
   .btn:hover{ color: var(--gold); border-color: var(--gold); }
-  .btn.primary{ background: var(--gold); border-color: var(--gold); color:#16131a; font-weight:600; }
+  .btn.primary{ background: var(--accent); border-color: var(--accent); color:#fff; font-weight:600; }
   .btn.primary:hover{ background: var(--paper); border-color: var(--paper); color:#16131a; }
 
   .floating-card .proj{ margin:0 0 11px 0; padding:0 0 10px 0; border-bottom:1px solid rgba(245,245,247,0.1); }
@@ -241,7 +241,7 @@
   .floating-card .proj p{ margin:3px 0 5px 0; font-size:12px; }
   .floating-card .proj a.proj-link, .floating-card p a.proj-link{
     display:inline-block; margin-right:12px; font-size:10.5px; letter-spacing:0.05em;
-    color: var(--gold); text-decoration:none; border-bottom:1px solid rgba(255,191,87,0.4); white-space:nowrap;
+    color: var(--gold); text-decoration:none; border-bottom:1px solid rgba(255,77,106,0.4); white-space:nowrap;
   }
   .tags{ display:flex; flex-wrap:wrap; gap:4px; margin:0 0 6px 0; }
   .tags span{
@@ -251,7 +251,7 @@
   .floating-card button.link{
     appearance:none; background:none; border:0; padding:0 0 2px 0; cursor:pointer; font-family:inherit;
     font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color: var(--gold);
-    border-bottom:1px solid rgba(255,191,87,0.4);
+    border-bottom:1px solid rgba(255,77,106,0.4);
   }
   .floating-card button.link:hover{ color: var(--paper); border-color: var(--paper); }
 
@@ -282,7 +282,7 @@
   #work .tags span{ font-size:11px; padding:3px 9px; }
   #work a.tl{
     display:inline-block; margin-right:16px; font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
-    color: var(--gold); text-decoration:none; border-bottom:1px solid rgba(255,191,87,0.4); padding-bottom:2px;
+    color: var(--gold); text-decoration:none; border-bottom:1px solid rgba(255,77,106,0.4); padding-bottom:2px;
   }
   #work a.tl:hover{ color: var(--paper); border-color: var(--paper); }
   #work .more{ list-style:none; padding:0; margin:0; }
@@ -325,7 +325,7 @@
   #work{
     background-color: rgba(0,0,0,0.97);
     background-image:
-      radial-gradient(60rem 30rem at 85% -10%, rgba(255,191,87,0.07), transparent 60%),
+      radial-gradient(60rem 30rem at 85% -10%, rgba(255,77,106,0.06), transparent 60%),
       radial-gradient(50rem 30rem at -10% 0%, rgba(224,25,63,0.13), transparent 60%);
   }
   #work h1{ font-size:clamp(44px, 6vw, 68px); letter-spacing:-0.01em; }
@@ -464,8 +464,8 @@
   <div style="position:fixed; inset:0; z-index:60; background:#000000; padding:32px; font-family:system-ui,sans-serif; overflow:auto;">
     <h1 style="font-family:Georgia,serif; font-weight:400;">Aditya Pandey</h1>
     <p>AI/ML engineer building local-first AI tools and Linux desktop apps. This portfolio needs JavaScript; my work is also on
-    <a style="color:#c9a35a" href="https://github.com/ItzAditya43">GitHub</a> and
-    <a style="color:#c9a35a" href="https://www.linkedin.com/in/adityapandey10/">LinkedIn</a>.</p>
+    <a style="color:#ff4d6a" href="https://github.com/ItzAditya43">GitHub</a> and
+    <a style="color:#ff4d6a" href="https://www.linkedin.com/in/adityapandey10/">LinkedIn</a>.</p>
   </div>
 </noscript>
 
@@ -899,7 +899,7 @@ var QUALITY = {
 var scene = new THREE.Scene();
 var skyColorTop = new THREE.Color('#1c2740');
 var skyColorBottom = new THREE.Color('#7a8fae');
-scene.fog = new THREE.FogExp2('#41506e', 0.0052);
+scene.fog = new THREE.FogExp2('#000000', 0.0052);
 
 var camera = new THREE.PerspectiveCamera(50, innerWidth / innerHeight, 0.1, 800);
 
@@ -921,7 +921,7 @@ function makeSkyDome() {
   var mat = new THREE.ShaderMaterial({
     side: THREE.BackSide,
     uniforms: { topColor: { value: skyColorTop.clone() }, bottomColor: { value: skyColorBottom.clone() },
-      sunDir: { value: new THREE.Vector3(0, 1, 0) }, sunGlow: { value: new THREE.Color('#ffd9a0') }, sunVis: { value: 0 },
+      sunDir: { value: new THREE.Vector3(0, 1, 0) }, sunGlow: { value: new THREE.Color('#ffe9e4') }, sunVis: { value: 0 },
       moonDir: { value: new THREE.Vector3(0, 1, 0) }, moonVis: { value: 0 } },
     vertexShader:
       'varying vec3 vWorldPos;' +
@@ -1684,7 +1684,7 @@ function buildLantern() {
   g.traverse(function (o) { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   g.userData.glowMat = box.material;
   if (QUALITY.lanternLights && (buildLantern.lit = (buildLantern.lit || 0) + 1) <= 14) { /* cap real lights; the rest glow via bloom */
-    var glow = new THREE.PointLight('#ffb15c', 0, 8, 2);
+    var glow = new THREE.PointLight('#ff6a5c', 0, 8, 2);
     glow.position.y = 1.75;
     g.add(glow);
     g.userData.glowLight = glow;
@@ -1877,7 +1877,7 @@ ISLANDS.slice(1).forEach(function (isl) {
 
 
 var VILLAGER_CLOTH = ['#a6362c', '#3f6b3a', '#3a5a8c', '#7a5a3a', '#8c5a7a', '#4a4a4a'];
-var VILLAGER_HAT = ['#d9c58c', '#8d8778', '#c9a35a'];
+var VILLAGER_HAT = ['#d8d4cc', '#8d8778', '#b5122f'];
 function buildVillager(seed) {
   var g = new THREE.Group();
   var skin = new THREE.MeshStandardMaterial({ color: '#e0b28c', roughness: 0.9 });
@@ -2274,10 +2274,10 @@ var groundSeasonTint = {
 };
 /* each season carries its own day-lit and night-lit sky/fog/sun so it still meshes with the real-time clock */
 var SEASON_SKY = {
-  spring: { dayTop: '#6f9fc9', dayBottom: '#dcebd8', nightTop: '#0d1526', nightBottom: '#233350', fogDay: '#c3dcc6', fogNight: '#20304a', sunDay: '#fff6d6', sunNight: '#9fb4e0' },
-  summer: { dayTop: '#1c3350', dayBottom: '#5f92b8', nightTop: '#05080f', nightBottom: '#16203a', fogDay: '#5f83a8', fogNight: '#141c30', sunDay: '#fff6df', sunNight: '#9fb4e0' },
-  autumn: { dayTop: '#4a3626', dayBottom: '#c98a5a', nightTop: '#0c0806', nightBottom: '#2a1c14', fogDay: '#a9714a', fogNight: '#22150f', sunDay: '#ffb46b', sunNight: '#a3806a' },
-  winter: { dayTop: '#232b3d', dayBottom: '#8b9db3', nightTop: '#080a12', nightBottom: '#1c2436', fogDay: '#aebccb', fogNight: '#182030', sunDay: '#e8f0ff', sunNight: '#aebfe0' }
+  spring: { dayTop: '#6f9fc9', dayBottom: '#dcebd8', nightTop: '#000000', nightBottom: '#02030a', fogDay: '#c3dcc6', fogNight: '#000000', sunDay: '#ffffff', sunNight: '#9fb4e0' },
+  summer: { dayTop: '#1c3350', dayBottom: '#5f92b8', nightTop: '#000000', nightBottom: '#02030a', fogDay: '#5f83a8', fogNight: '#000000', sunDay: '#ffffff', sunNight: '#9fb4e0' },
+  autumn: { dayTop: '#4a3626', dayBottom: '#c98a5a', nightTop: '#000000', nightBottom: '#080303', fogDay: '#a9714a', fogNight: '#000000', sunDay: '#ffd9d2', sunNight: '#a3806a' },
+  winter: { dayTop: '#232b3d', dayBottom: '#8b9db3', nightTop: '#000000', nightBottom: '#02030a', fogDay: '#aebccb', fogNight: '#000000', sunDay: '#e8f0ff', sunNight: '#aebfe0' }
 };
 var SEASON_META = {
   spring: { kanji: '春', label: 'Spring', particleActive: false },
@@ -2508,7 +2508,7 @@ islandGroup.add(petals);
 
 /* --- sky lanterns: rise from the village after dusk --- */
 var SKY_LANTERN_COUNT = IS_MOBILE ? 18 : 46;
-var skyLanternMat = new THREE.MeshBasicMaterial({ color: '#ffb347', fog: false });
+var skyLanternMat = new THREE.MeshBasicMaterial({ color: '#ff3a58', fog: false });
 skyLanternMat.toneMapped = false;
 var skyLanternGeo = new THREE.CylinderGeometry(0.38, 0.26, 0.8, 6);
 var skyLanterns = new THREE.InstancedMesh(skyLanternGeo, skyLanternMat, SKY_LANTERN_COUNT);
@@ -2523,7 +2523,7 @@ var skyGlowPos = new Float32Array(SKY_LANTERN_COUNT * 3);
 var skyGlowGeo = new THREE.BufferGeometry();
 skyGlowGeo.setAttribute('position', new THREE.BufferAttribute(skyGlowPos, 3));
 var skyGlowMat = new THREE.PointsMaterial({
-  color: '#ff9a3c', size: 4.2, map: makeGlowTexture('rgba(255,190,110,0.9)'), transparent: true, opacity: 0,
+  color: '#ff2a4a', size: 4.2, map: makeGlowTexture('rgba(255,90,110,0.9)'), transparent: true, opacity: 0,
   depthWrite: false, blending: THREE.AdditiveBlending, fog: false
 });
 var skyGlow = new THREE.Points(skyGlowGeo, skyGlowMat);
@@ -2542,7 +2542,7 @@ for (var ff = 0; ff < FIREFLY_COUNT; ff++) {
 var fireflyGeo = new THREE.BufferGeometry();
 fireflyGeo.setAttribute('position', new THREE.BufferAttribute(fireflyPos, 3));
 var fireflyMat = new THREE.PointsMaterial({
-  color: '#ffe08a', size: 0.42, map: makeGlowTexture('rgba(255,236,170,1)'), transparent: true, opacity: 0,
+  color: '#ffd7dc', size: 0.42, map: makeGlowTexture('rgba(255,225,230,1)'), transparent: true, opacity: 0,
   depthWrite: false, blending: THREE.AdditiveBlending
 });
 fireflyMat.toneMapped = false;
@@ -3153,7 +3153,7 @@ function updateAtmosphere(t, dt) {
    12. Real-time day / night system + watch widget
 --------------------------------------------------------------------- */
 var groundDayTint = new THREE.Color('#ffffff');
-var groundNightTint = new THREE.Color('#404a66');
+var groundNightTint = new THREE.Color('#2c3250');
 
 var digitalTimeEl = document.getElementById('digital-time');
 var digitalDateEl = document.getElementById('digital-date');
@@ -3215,7 +3215,11 @@ function updateDayNight() {
   hemi.intensity = 0.32 + st * 0.2;
   renderer.toneMappingExposure = 1.1 - st * 0.32; /* bright sky + sun + sky reflections overexpose at 1.1 */
 
-  starMat.opacity = nightAmt * 0.85;
+  starMat.opacity = nightAmt * 0.95;
+  /* OLED: at night the cloud sea fades to near black so only stars, moon and lights stay lit */
+  var cloudLum = 0.05 + 0.95 * st;
+  for (var cci = 0; cci < cloudData.length; cci++) cloudData[cci].sprite.material.color.setScalar(cloudLum);
+  lowCloudMat.color.setScalar(cloudLum);
 
   if (bloomPass) bloomPass.strength = 0.22 + nightAmt * 0.55;
 
