@@ -921,7 +921,7 @@ function makeSkyDome() {
   var mat = new THREE.ShaderMaterial({
     side: THREE.BackSide,
     uniforms: { topColor: { value: skyColorTop.clone() }, bottomColor: { value: skyColorBottom.clone() },
-      sunDir: { value: new THREE.Vector3(0, 1, 0) }, sunGlow: { value: new THREE.Color('#ffe9e4') }, sunVis: { value: 0 },
+      sunDir: { value: new THREE.Vector3(0, 1, 0) }, sunGlow: { value: new THREE.Color('#ffd9a0') }, sunVis: { value: 0 },
       moonDir: { value: new THREE.Vector3(0, 1, 0) }, moonVis: { value: 0 } },
     vertexShader:
       'varying vec3 vWorldPos;' +
@@ -1684,7 +1684,7 @@ function buildLantern() {
   g.traverse(function (o) { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   g.userData.glowMat = box.material;
   if (QUALITY.lanternLights && (buildLantern.lit = (buildLantern.lit || 0) + 1) <= 14) { /* cap real lights; the rest glow via bloom */
-    var glow = new THREE.PointLight('#ff6a5c', 0, 8, 2);
+    var glow = new THREE.PointLight('#ffb15c', 0, 8, 2);
     glow.position.y = 1.75;
     g.add(glow);
     g.userData.glowLight = glow;
@@ -1877,7 +1877,7 @@ ISLANDS.slice(1).forEach(function (isl) {
 
 
 var VILLAGER_CLOTH = ['#a6362c', '#3f6b3a', '#3a5a8c', '#7a5a3a', '#8c5a7a', '#4a4a4a'];
-var VILLAGER_HAT = ['#d8d4cc', '#8d8778', '#b5122f'];
+var VILLAGER_HAT = ['#d9c58c', '#8d8778', '#c9a35a'];
 function buildVillager(seed) {
   var g = new THREE.Group();
   var skin = new THREE.MeshStandardMaterial({ color: '#e0b28c', roughness: 0.9 });
@@ -2274,9 +2274,9 @@ var groundSeasonTint = {
 };
 /* each season carries its own day-lit and night-lit sky/fog/sun so it still meshes with the real-time clock */
 var SEASON_SKY = {
-  spring: { dayTop: '#6f9fc9', dayBottom: '#dcebd8', nightTop: '#000000', nightBottom: '#02030a', fogDay: '#c3dcc6', fogNight: '#000000', sunDay: '#ffffff', sunNight: '#9fb4e0' },
-  summer: { dayTop: '#1c3350', dayBottom: '#5f92b8', nightTop: '#000000', nightBottom: '#02030a', fogDay: '#5f83a8', fogNight: '#000000', sunDay: '#ffffff', sunNight: '#9fb4e0' },
-  autumn: { dayTop: '#4a3626', dayBottom: '#c98a5a', nightTop: '#000000', nightBottom: '#080303', fogDay: '#a9714a', fogNight: '#000000', sunDay: '#ffd9d2', sunNight: '#a3806a' },
+  spring: { dayTop: '#6f9fc9', dayBottom: '#dcebd8', nightTop: '#000000', nightBottom: '#02030a', fogDay: '#c3dcc6', fogNight: '#000000', sunDay: '#fff6d6', sunNight: '#9fb4e0' },
+  summer: { dayTop: '#1c3350', dayBottom: '#5f92b8', nightTop: '#000000', nightBottom: '#02030a', fogDay: '#5f83a8', fogNight: '#000000', sunDay: '#fff6df', sunNight: '#9fb4e0' },
+  autumn: { dayTop: '#4a3626', dayBottom: '#c98a5a', nightTop: '#000000', nightBottom: '#080303', fogDay: '#a9714a', fogNight: '#000000', sunDay: '#ffb46b', sunNight: '#a3806a' },
   winter: { dayTop: '#232b3d', dayBottom: '#8b9db3', nightTop: '#000000', nightBottom: '#02030a', fogDay: '#aebccb', fogNight: '#000000', sunDay: '#e8f0ff', sunNight: '#aebfe0' }
 };
 var SEASON_META = {
@@ -2508,7 +2508,7 @@ islandGroup.add(petals);
 
 /* --- sky lanterns: rise from the village after dusk --- */
 var SKY_LANTERN_COUNT = IS_MOBILE ? 18 : 46;
-var skyLanternMat = new THREE.MeshBasicMaterial({ color: '#ff3a58', fog: false });
+var skyLanternMat = new THREE.MeshBasicMaterial({ color: '#ffb347', fog: false });
 skyLanternMat.toneMapped = false;
 var skyLanternGeo = new THREE.CylinderGeometry(0.38, 0.26, 0.8, 6);
 var skyLanterns = new THREE.InstancedMesh(skyLanternGeo, skyLanternMat, SKY_LANTERN_COUNT);
@@ -2523,7 +2523,7 @@ var skyGlowPos = new Float32Array(SKY_LANTERN_COUNT * 3);
 var skyGlowGeo = new THREE.BufferGeometry();
 skyGlowGeo.setAttribute('position', new THREE.BufferAttribute(skyGlowPos, 3));
 var skyGlowMat = new THREE.PointsMaterial({
-  color: '#ff2a4a', size: 4.2, map: makeGlowTexture('rgba(255,90,110,0.9)'), transparent: true, opacity: 0,
+  color: '#ff9a3c', size: 4.2, map: makeGlowTexture('rgba(255,190,110,0.9)'), transparent: true, opacity: 0,
   depthWrite: false, blending: THREE.AdditiveBlending, fog: false
 });
 var skyGlow = new THREE.Points(skyGlowGeo, skyGlowMat);
@@ -2542,7 +2542,7 @@ for (var ff = 0; ff < FIREFLY_COUNT; ff++) {
 var fireflyGeo = new THREE.BufferGeometry();
 fireflyGeo.setAttribute('position', new THREE.BufferAttribute(fireflyPos, 3));
 var fireflyMat = new THREE.PointsMaterial({
-  color: '#ffd7dc', size: 0.42, map: makeGlowTexture('rgba(255,225,230,1)'), transparent: true, opacity: 0,
+  color: '#ffe08a', size: 0.42, map: makeGlowTexture('rgba(255,236,170,1)'), transparent: true, opacity: 0,
   depthWrite: false, blending: THREE.AdditiveBlending
 });
 fireflyMat.toneMapped = false;
